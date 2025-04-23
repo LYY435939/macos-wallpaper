@@ -122,7 +122,7 @@ Add the following to `Package.swift`:
 ```swift
 import Wallpaper
 
-let imageURL = URL(fileURLWithPath: "<path>", isDirectory: false)
+let imageURL = URL(filePath: "<path>")
 try! Wallpaper.set(imageURL, screen: .main, scale: .fill)
 
 let solidColor = NSColor.blue
