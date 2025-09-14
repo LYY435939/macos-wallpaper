@@ -133,6 +133,9 @@ print(try! Wallpaper.get(screen: .main))
 
 See the [source](Sources/wallpaper/Wallpaper.swift) for more.
 
+> [!NOTE]
+> In sandboxed apps, the library gracefully handles database access restrictions and may return directory paths instead of specific image files when getting current wallpapers.
+
 ## Dev
 
 ### Run

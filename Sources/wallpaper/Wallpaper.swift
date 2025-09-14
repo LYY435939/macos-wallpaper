@@ -67,7 +67,14 @@ public enum Wallpaper {
 	*/
 	public static func get(screen: Screen = .all) throws -> [URL] {
 		let wallpaperURLs = screen.nsScreens.compactMap { NSWorkspace.shared.desktopImageURL(for: $0) }
-		return try wallpaperURLs.map { $0.isDirectory ? try getFromDirectory($0) : $0 }
+		return wallpaperURLs.map { url in
+			if url.isDirectory {
+				// Try to get specific image from directory, fall back to directory if it fails (e.g., in sandbox)
+				return (try? getFromDirectory(url)) ?? url
+			} else {
+				return url
+			}
+		}
 	}
 
 	/**
