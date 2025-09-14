@@ -71,6 +71,32 @@ public enum Wallpaper {
 	}
 
 	/**
+	Validates that a file or directory exists and is accessible.
+	*/
+	private static func validateFile(_ url: URL) throws {
+		var isDirectory: ObjCBool = false
+
+		guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) else {
+			throw NSError(
+				domain: "WallpaperError",
+				code: 1,
+				userInfo: [NSLocalizedDescriptionKey: "The file doesn't exist."]
+			)
+		}
+
+		// For files, ensure they're actually accessible
+		if !isDirectory.boolValue {
+			guard (try? url.checkResourceIsReachable()) == true else {
+				throw NSError(
+					domain: "WallpaperError",
+					code: 1,
+					userInfo: [NSLocalizedDescriptionKey: "The file exists but is not accessible."]
+				)
+			}
+		}
+	}
+
+	/**
 	Works around a macOS bug where if you set a wallpaper to the same path as the existing wallpaper but with different content, it doesn't update.
 
 	https://openradar.appspot.com/radar?id=6095446787227648
@@ -102,6 +128,9 @@ public enum Wallpaper {
 		scale: Scale = .auto,
 		fillColor: NSColor? = nil
 	) throws {
+		// Validate that the file or directory exists and is accessible
+		try validateFile(image)
+
 		var options = [NSWorkspace.DesktopImageOptionKey: Any]()
 
 		switch scale {
