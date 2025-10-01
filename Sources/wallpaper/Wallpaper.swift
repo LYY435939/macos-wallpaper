@@ -45,8 +45,16 @@ public enum Wallpaper {
 	Works around macOS bug where it sometimes returns a directory instead of an image.
 
 	https://openradar.appspot.com/radar?id=4959084113559552
+
+	Note: This workaround is only needed on macOS versions prior to macOS 26. On macOS 26+, the database schema may have changed or may not exist, and NSWorkspace.shared.desktopImageURL appears to return proper file paths.
 	*/
 	private static func getFromDirectory(_ url: URL) throws -> URL {
+		// On macOS 26+, skip the database workaround as it may not be available
+		// and the underlying bug appears to be fixed
+		if #available(macOS 26, *) {
+			return url
+		}
+
 		let appSupportDirectory = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
 		let dbURL = appSupportDirectory.appendingPathComponent("Dock/desktoppicture.db", isDirectory: false)
 
